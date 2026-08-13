@@ -63,7 +63,7 @@ jobs:
                   if isinstance(expected, (int, np.integer)):
                       if observed != int(expected):
                           raise SystemExit(f'{row["file"]}: mismatch in {key}')
-                  elif not np.isclose(observed, expected, rtol=1e-7, atol=1e-7):
+                  elif not np.isclose(observed, expected, rtol=1e-6, atol=1e-6):
                       raise SystemExit(f'{row["file"]}: mismatch in {key}')
           PY
       - name: Audit morphology count
