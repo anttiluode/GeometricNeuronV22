@@ -1,0 +1,48 @@
+name: fci-morphology-smoke
+
+on:
+  push:
+    paths:
+      - "geometric_neuron_v22/**"
+      - "scripts/extract_morphology_features.py"
+      - "pyproject.toml"
+      - ".github/workflows/fci-morphology-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  external-morphology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install V22 morphology dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[morphology]'
+      - name: Fetch authors' public FCI repository
+        run: |
+          git clone --depth=1 https://github.com/ido4848/FCI.git external/FCI
+          find external/FCI/simulating_neurons/neuron_models -type f -name '*.asc' -print | sort
+      - name: Extract label-free V22 features
+        run: |
+          mkdir -p artifacts
+          python scripts/extract_morphology_features.py \
+            external/FCI/simulating_neurons/neuron_models \
+            --csv artifacts/fci_morphology_features.csv \
+            --json artifacts/fci_morphology_features.json
+      - name: Audit morphology count
+        run: |
+          python - <<'PY'
+          import json
+          rows = json.load(open('artifacts/fci_morphology_features.json', encoding='utf-8'))
+          print('public morphology files processed:', len(rows))
+          if len(rows) < 4:
+              raise SystemExit('expected at least the four morphology files observed during data audit')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fci-morphology-smoke
+          path: artifacts/
