@@ -1,8 +1,8 @@
 # External FCI geometry gate v0.1
 
-Status: **frozen before opening the 24 cell-level FCI labels.**
+Status: **analysis frozen before opening the 24 cell-level FCI labels; outcome blinding was later lost during morphology provenance work when the published Fig. 2 was inspected.**
 
-This gate was first written in `GeometricNeuronPlusField/FCI_EXTERNAL_GEOMETRY_PREREG_V01.md` and is carried into V22 unchanged in substance.
+This gate was first written in `GeometricNeuronPlusField/FCI_EXTERNAL_GEOMETRY_PREREG_V01.md` and is carried into V22 unchanged in substance. The loss of blinding does not reopen feature, baseline, inclusion, or decision-rule choices.
 
 ## Question
 
