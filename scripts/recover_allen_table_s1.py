@@ -10,9 +10,9 @@ from urllib.request import urlopen
 
 from geometric_neuron_v22 import full_feature_row, load_neurom_cable_tree
 
-# 790872626 is currently unresolved in both Specimen and NeuronReconstruction
-# queries. Keep it literal, but put it last so all resolvable Table-S1 Allen
-# cells are audited before the script stops on the provenance failure.
+# Keep the published Table-S1 identifier literal. 790872626 is currently
+# unresolved in both Specimen and NeuronReconstruction queries; callers may
+# request a partial receipt, but the row must never be silently substituted.
 ALLEN_SPECIMENS = (
     548494556,
     528614014,
@@ -75,19 +75,34 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--work-dir", type=Path, required=True)
     ap.add_argument("--receipt", type=Path, required=True)
+    ap.add_argument(
+        "--allow-unresolved",
+        action="store_true",
+        help="write resolved rows plus explicit unresolved errors instead of aborting",
+    )
     args = ap.parse_args()
 
     args.work_dir.mkdir(parents=True, exist_ok=True)
-    receipt = []
+    resolved = []
+    unresolved = []
 
     for specimen_id in ALLEN_SPECIMENS:
         raw = args.work_dir / f"{specimen_id}.swc"
         floored = args.work_dir / f"{specimen_id}_dmin03.swc"
-        download_link = fetch_reconstruction(specimen_id, raw)
+        try:
+            download_link = fetch_reconstruction(specimen_id, raw)
+        except Exception as exc:
+            unresolved.append({"specimen_id": specimen_id, "error": str(exc)})
+            print(specimen_id, "UNRESOLVED", str(exc), flush=True)
+            if not args.allow_unresolved:
+                raise
+            continue
+
         edits = apply_diameter_floor(raw, floored)
         tree = load_neurom_cable_tree(floored)
         row = {
             "specimen_id": specimen_id,
+            "status": "source_compatible",
             "source": "Allen Cell Types specimen reconstruction",
             "download_link": download_link,
             "diameter_floor_um": 0.3,
@@ -96,11 +111,23 @@ def main() -> None:
             "floored_sha256": sha256(floored),
             **full_feature_row(tree),
         }
-        receipt.append(row)
-        print(specimen_id, f"edits={edits}", f"nodes={row['n_nodes']}")
+        resolved.append(row)
+        print(
+            specimen_id,
+            f"edits={edits}",
+            f"nodes={row['n_nodes']}",
+            f"length={row['total_dendritic_length']:.3f}",
+            f"area={row['total_dendritic_area']:.3f}",
+            f"G=({row['g1_spectral_entropy']:.4f},{row['g2_root_participation_entropy']:.4f},{row['g3_log_spacing_irregularity']:.4f})",
+            flush=True,
+        )
 
+    payload = {"resolved": resolved, "unresolved": unresolved}
     args.receipt.parent.mkdir(parents=True, exist_ok=True)
-    args.receipt.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    args.receipt.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    if unresolved and not args.allow_unresolved:
+        raise SystemExit("unresolved Allen rows remain")
 
 
 if __name__ == "__main__":
