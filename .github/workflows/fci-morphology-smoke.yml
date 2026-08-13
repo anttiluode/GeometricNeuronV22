@@ -6,6 +6,7 @@ on:
       - "geometric_neuron_v22/**"
       - "scripts/extract_morphology_features.py"
       - "scripts/probe_neuromorpho_mohan.py"
+      - "scripts/recover_mohan_neuromorpho.py"
       - "pyproject.toml"
       - ".github/workflows/fci-morphology-smoke.yml"
   workflow_dispatch:
@@ -29,9 +30,14 @@ jobs:
           find external/FCI/simulating_neurons/neuron_models -type f -name '*.asc' -print | sort
       - name: Probe NeuroMorpho for Mohan Table-S1 cells
         run: python scripts/probe_neuromorpho_mohan.py
-      - name: Extract label-free V22 features
+      - name: Recover public Mohan source morphologies
         run: |
           mkdir -p artifacts
+          python scripts/recover_mohan_neuromorpho.py \
+            --work-dir external/mohan \
+            --receipt artifacts/mohan_source_features.json
+      - name: Extract label-free V22 features
+        run: |
           python scripts/extract_morphology_features.py \
             external/FCI/simulating_neurons/neuron_models \
             --csv artifacts/fci_morphology_features.csv \
@@ -74,9 +80,13 @@ jobs:
           python - <<'PY'
           import json
           rows = json.load(open('artifacts/fci_morphology_features.json', encoding='utf-8'))
-          print('public morphology files processed:', len(rows))
+          print('public author morphology files processed:', len(rows))
           if len(rows) < 4:
               raise SystemExit('expected at least the four morphology files observed during data audit')
+          source = json.load(open('artifacts/mohan_source_features.json', encoding='utf-8'))
+          print('Mohan source morphologies recovered:', len(source))
+          if len(source) != 5:
+              raise SystemExit('expected five NeuroMorpho Mohan source files')
           PY
       - uses: actions/upload-artifact@v4
         with:
