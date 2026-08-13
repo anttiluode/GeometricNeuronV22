@@ -1,4 +1,6 @@
+import json
 import unittest
+from pathlib import Path
 
 from geometric_neuron_v22.panel import MANIFEST, receipt_summary, validate_receipt
 
@@ -46,6 +48,18 @@ class PanelReceiptTests(unittest.TestCase):
         rows[3]["identifier"] = "something-close"
         with self.assertRaisesRegex(ValueError, "identifier"):
             validate_receipt(rows)
+
+    def test_frozen_partial_panel_is_exactly_16_plus_8_and_not_gate_ready(self):
+        path = Path(__file__).parents[1] / "data" / "frozen_partial_panel_v01.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        rows = validate_receipt(payload["rows"], gate_ready=False)
+        summary = receipt_summary(rows)
+        self.assertEqual(payload["resolved_count"], 16)
+        self.assertEqual(payload["unresolved_count"], 8)
+        self.assertEqual(summary["gate_compatible"], 16)
+        self.assertEqual(summary["unresolved"], 8)
+        with self.assertRaisesRegex(ValueError, "blocks gate"):
+            validate_receipt(payload["rows"], gate_ready=True)
 
 
 if __name__ == "__main__":
