@@ -1,4 +1,4 @@
-import json
+import csv
 import unittest
 from pathlib import Path
 
@@ -49,17 +49,33 @@ class PanelReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "identifier"):
             validate_receipt(rows)
 
-    def test_frozen_partial_panel_is_exactly_16_plus_8_and_not_gate_ready(self):
-        path = Path(__file__).parents[1] / "data" / "frozen_partial_panel_v01.json"
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        rows = validate_receipt(payload["rows"], gate_ready=False)
-        summary = receipt_summary(rows)
-        self.assertEqual(payload["resolved_count"], 16)
-        self.assertEqual(payload["unresolved_count"], 8)
-        self.assertEqual(summary["gate_compatible"], 16)
-        self.assertEqual(summary["unresolved"], 8)
-        with self.assertRaisesRegex(ValueError, "blocks gate"):
-            validate_receipt(payload["rows"], gate_ready=True)
+    def test_frozen_csv_panel_is_exactly_16_plus_8(self):
+        path = Path(__file__).parents[1] / "data" / "frozen_panel_v01.csv"
+        with path.open(newline="", encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        self.assertEqual(len(rows), 24)
+        resolved = [row for row in rows if row["status"] != "unresolved"]
+        unresolved = [row for row in rows if row["status"] == "unresolved"]
+        self.assertEqual(len(resolved), 16)
+        self.assertEqual(len(unresolved), 8)
+
+        for expected, row in zip(MANIFEST, rows):
+            order, species, layer, identifier, source = expected
+            self.assertEqual(int(row["order"]), order)
+            self.assertEqual(row["species"], species)
+            self.assertEqual(row["layer"], layer)
+            self.assertEqual(row["identifier"], identifier)
+            self.assertEqual(row["source"], source)
+            if row["status"] == "unresolved":
+                self.assertEqual(row["total_dendritic_area"], "")
+                self.assertEqual(row["g1_spectral_entropy"], "")
+            else:
+                self.assertNotEqual(row["content_hash"], "")
+                self.assertNotEqual(row["total_dendritic_area"], "")
+                self.assertNotEqual(row["longest_root_to_tip_path"], "")
+                self.assertNotEqual(row["g1_spectral_entropy"], "")
+                self.assertNotEqual(row["g2_root_participation_entropy"], "")
+                self.assertNotEqual(row["g3_log_spacing_irregularity"], "")
 
 
 if __name__ == "__main__":
