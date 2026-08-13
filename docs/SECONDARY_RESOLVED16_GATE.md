@@ -6,9 +6,7 @@ The strict 24-cell panel is blocked because eight published rows do not currentl
 
 ## Inclusion rule
 
-Use **exactly the 16 rows marked `author_exact` or `source_compatible` in `data/frozen_partial_panel_v01.json` at commit `f7211fe23294181fb2787d4149c57a47e1f40b44`.**
-
-No row may be added, removed, substituted, or reclassified in response to its FCI value.
+Use **exactly the 16 rows marked `author_exact` or `source_compatible` by the provenance freeze.**
 
 Frozen orders:
 
@@ -17,7 +15,15 @@ Frozen orders:
 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24
 ```
 
-This inclusion rule is based only on morphology provenance. It is visibly imbalanced (5 rat, 11 human) and therefore cannot replace the full 12+12 primary panel.
+No row may be added, removed, substituted, or reclassified in response to its FCI value. The inclusion rule is based only on morphology provenance. It is visibly imbalanced (5 rat, 11 human) and therefore cannot replace the full 12+12 primary panel.
+
+The **canonical target-free feature table** is `data/frozen_panel_v01.csv`, committed as `e72b84220e0f0e0741f59ce395dae4990aebb85d` with SHA256:
+
+```text
+1f8d05ca14e6c09351ab8dd2c186da36399708c9b3e1a6893f88f84d7c20a677
+```
+
+An earlier hand-transcribed JSON at commit `f7211fe...` contained incorrect longest-path values for the three recovered Markram rows. The mismatch was caught by rereading the successful GitHub Actions artifact **before the secondary regression was run**. Inclusion status did not change. The CSV above uses the artifact values and is the only feature table admitted to this secondary computation.
 
 ## Features and estimator
 
@@ -47,8 +53,8 @@ Report:
 - Spearman correlation;
 - per-cell absolute-error improvement (`|e_B2| - |e_B2+G|`);
 - mean paired improvement;
-- bootstrap 95% CI of mean paired improvement;
-- exact two-sided sign-flip p value.
+- percentile bootstrap 95% CI of mean paired improvement using 200,000 resamples and seed `20260813`;
+- exact two-sided sign-flip p value over all `2^16` sign assignments.
 
 For continuity, apply the same pass rule as the strict gate:
 
