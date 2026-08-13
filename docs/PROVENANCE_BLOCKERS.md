@@ -6,6 +6,19 @@ The rule is simple:
 
 > **No FCI/AUC target mapping until every row admitted to the primary panel has an explicit morphology provenance decision made without looking at its target.**
 
+## Important availability finding
+
+The final 2026 PNAS paper states that **morphologies and neuron-model data have been deposited in the authors' GitHub repository** (`ido4848/FCI`). The same repository currently exposes only four morphology files when recursively enumerated:
+
+- Rat L2/3 `L2 TPC`
+- Rat L5 `cell1`
+- Human L5 `2057`
+- Human L2/3 `1125`
+
+The older 2024 preprint was explicit that only those four examples were public and that the other neuron morphologies/models were available on request. The final publication therefore appears to promise a fuller public deposit than is presently visible in the cited repository.
+
+This changes the recovery strategy: do not spend the primary gate inventing approximate replacements for data the final paper says should be deposited. First exhaust the cited repository/history and authoritative source mappings; if the missing author-used files remain absent, the clean next step is an author data request rather than arbitrary exemplar selection.
+
 ## Current 24-row status
 
 ### Author-exact files already in the released FCI repository
@@ -94,7 +107,7 @@ CI tests this contract.
 
 Preferred order:
 
-1. recover the exact missing Markram/Reimann files or a unique mapping from an author/source manifest;
+1. recover the missing author-used files from the cited FCI deposit, an authoritative source mapping, or the authors;
 2. resolve Allen `790872626` through an authoritative mapping or exact archived source;
 3. build one immutable 24-row label-free B2+G table with hashes and compatibility flags;
 4. only then map the 24 FCI targets and run the frozen gate once.
