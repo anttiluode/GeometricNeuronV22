@@ -5,6 +5,8 @@ import json
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+# Keep the Table-S1 IDs literal. A zero match is an unresolved provenance result,
+# not permission to substitute a nearby specimen.
 IDENTIFIERS = [548494556, 528614014, 539661667, 569818704, 790872626, 558211203]
 API = "http://api.brain-map.org"
 
