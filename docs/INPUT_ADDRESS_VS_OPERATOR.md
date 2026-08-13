@@ -81,8 +81,49 @@ A weak after fair controls
 
 The point is not to "debunk" the paper. The useful result would be a cleaner decomposition of what a large dendritic tree buys computationally.
 
-## PivotPoint seam
+## PivotPoint seam: effective dendritic control degrees of freedom
 
-This distinction also creates a precise bridge to PivotPoint. A dendritic location is not interesting merely because it is another coordinate. It is interesting if an intervention there can produce a **materially distinct future state** at a receiver such as the soma or another compartment.
+This distinction creates a more precise bridge to PivotPoint.
 
-That motivates a stronger quantity than raw synapse count: **effective dendritic control degrees of freedom**. See `PIVOTPOINT_BRIDGE.md`.
+PivotPoint's useful control degree of freedom is not another named action; it is a materially distinct reachable future. Apply the same logic inside a dendritic tree.
+
+For a fixed morphology and operating state, apply the same small test input at location `i` and observe the future receiver trajectory, initially at the soma:
+
+```text
+site i -> cable dynamics -> somatic response h_i(t)
+```
+
+Two physical sites should not count as two useful degrees of freedom if they produce effectively the same receiver trajectory. A stronger quantity than raw synapse count is therefore the **effective diversity of location-to-receiver transfer kernels**.
+
+With the same number `K` of sampled sites for every morphology, build a transfer dictionary:
+
+```text
+H = [vec(h_1) vec(h_2) ... vec(h_K)]
+```
+
+Possible descriptive quantities include effective rank, singular-value entropy, or response clusters above a fixed tolerance. Report both raw responses and column-normalized responses so simple attenuation is separated from temporal-shape diversity.
+
+This also brings time into Geometric Neuron without needing a vague "wide present" claim. Morphology can convert input location into different latency, rise/decay, attenuation, and relaxation-mode mixtures. The concrete question becomes:
+
+> **How many materially different future receiver trajectories can this morphology produce when only the input location changes?**
+
+That is very close to PivotPoint's operational control-DOF definition, now applied inside one cell.
+
+The passive case is only the baseline. Local NMDA-like nonlinearities can make the effect of one input depend on simultaneous activity and current voltage state, so the effective repertoire of reachable futures can itself become state-dependent. This does not imply that dendrites choose or that neurons are conscious; it is a statement about conditional local influence.
+
+A later, separately preregistered ladder would be:
+
+1. **D0 — passive fixed-K transfer diversity:** same material constants, same `K`, same observation horizon, real morphologies.
+2. **D1 — matched morphology controls:** preserve simple size/path quantities while altering branch allocation; if size/path explains the effect, stop.
+3. **D2 — nonlinear expansion:** only after D0/D1, test whether multi-site nonlinear responses occupy receiver trajectories outside the passive linear span.
+
+The possible synthesis is therefore narrower than the old slogan "shape computes":
+
+```text
+morphology creates local input addresses
++ cable dynamics map addresses to temporal receiver trajectories
++ nonlinear local state changes which combinations are effective
+= state-dependent reachable receiver futures
+```
+
+If real morphologies do not show this beyond ordinary area/path effects, the bridge dies. If they do, V22 has a direct route toward an artificial-neuron design later: a small tree of local stateful subunits evaluated by the distinct downstream effects they can create, rather than by decorative geometric complexity.
