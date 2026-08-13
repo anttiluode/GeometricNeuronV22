@@ -21,4 +21,38 @@ That creates a hostile benchmark for Geometric Neuron: ordinary morphology alrea
 
 The authors released code, reconstructed morphologies, and neuron models in `ido4848/FCI` on GitHub. V22 should use those released files directly.
 
-Only after the morphology gate is resolved should V22 consider the paper's second result, the additional contribution of synaptic nonlinearities.
+## Source-code surprise: approximately fixed interface, different physical metric
+
+A later source-code audit found a particularly relevant design choice.
+
+The paper describes one excitatory and one inhibitory input source per micrometer of dendritic length. In the released simulator, those fine-grained sources are pooled into one excitatory and one inhibitory super-synapse per NEURON segment. The model-specific segment chunk sizes are then tuned so that very different morphologies have approximately the same number of dendritic segments.
+
+Using V22's measured cable lengths and the released average segment lengths gives approximately:
+
+```text
+human 1125 L2/3    20633.00 / 19.839  ~= 1040 segments
+rat L2              4778.55 /  4.595  ~= 1040 segments
+rat Hay L5          12574.40 / 12.079  ~= 1041 segments
+```
+
+The released human 1125 constructor uses a 40 micrometer chunk size, while the rat L2 constructor uses 9.195 micrometers. This strongly suggests that the input discretization was intentionally normalized near a common segment count.
+
+This kills a tempting but wrong easy explanation: the human neuron is not simply harder for the TCN because it has vastly more segment-level input channels.
+
+It also sharpens the Geometric Neuron contact. At approximately fixed interface dimension, the physical metric underneath the interface changes dramatically:
+
+```text
+same-ish number of sampled compartments
+but
+very different cable length per compartment
+very different membrane allocation
+very different paths / branching geometry
+```
+
+So the Aizenbud setup is unexpectedly close to a **metric-geometry test at approximately fixed discretization size**. More nodes is not the explanation; what changes is how physical cable is allocated through and between those nodes.
+
+This is consistent with the paper's morphology-only control: assigning rat-type synapses to both species reduces but does not eliminate the human/rat FCI difference. It is also consistent with the weak predictive value of raw bifurcation count compared with area/path allocation.
+
+Do not overstate this. The biophysical models still differ in morphology-dependent electrical load, nominal fine-grained input-source multiplicity, and other modeled details. But it is a much cleaner external collision with V22 than the phrase "complex trees compute more" suggests.
+
+Only after the frozen morphology gate is resolved should V22 consider the paper's second result, the additional contribution of synaptic nonlinearities or the post-gate PivotPoint/transfer-response branch described in `INPUT_ADDRESS_VS_OPERATOR.md`.
