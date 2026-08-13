@@ -10,13 +10,16 @@ from urllib.request import urlopen
 
 from geometric_neuron_v22 import full_feature_row, load_neurom_cable_tree
 
+# 790872626 is currently unresolved in both Specimen and NeuronReconstruction
+# queries. Keep it literal, but put it last so all resolvable Table-S1 Allen
+# cells are audited before the script stops on the provenance failure.
 ALLEN_SPECIMENS = (
     548494556,
     528614014,
     539661667,
     569818704,
-    790872626,
     558211203,
+    790872626,
 )
 API = "http://api.brain-map.org"
 
