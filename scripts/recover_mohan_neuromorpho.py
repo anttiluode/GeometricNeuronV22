@@ -18,9 +18,6 @@ TARGETS = {
     "1125": "1125_Mohan_etal_2015",
 }
 
-# NeuroMorpho's current FAQ documents standardized morphology files as:
-# /dableFiles/[archive lower case]/CNG version/[neuron name].CNG.swc
-# Original/source files are currently not programmatically accessible there.
 CNG_URL = (
     "https://neuromorpho.org/dableFiles/dekock/"
     "CNG%20version/{name}.CNG.swc"
@@ -59,8 +56,6 @@ def main() -> None:
 
     rows = []
     for identifier, name in TARGETS.items():
-        # quote() is retained for names with spaces/special characters even though the
-        # current five names are simple ASCII identifiers.
         source_url = CNG_URL.format(name=quote(name, safe="_-."))
         raw = args.work_dir / f"{name}.CNG.swc"
         floored = args.work_dir / f"{name}_dmin03.CNG.swc"
@@ -86,6 +81,10 @@ def main() -> None:
             f"nodes={row['n_nodes']}",
             f"length={row['total_dendritic_length']:.3f}",
             f"area={row['total_dendritic_area']:.3f}",
+            "G=("
+            f"{row['g1_spectral_entropy']:.4f},"
+            f"{row['g2_root_participation_entropy']:.4f},"
+            f"{row['g3_log_spacing_irregularity']:.4f})",
             flush=True,
         )
 
