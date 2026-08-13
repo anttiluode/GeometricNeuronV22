@@ -5,6 +5,7 @@ on:
     paths:
       - "geometric_neuron_v22/**"
       - "scripts/extract_morphology_features.py"
+      - "scripts/probe_neuromorpho_mohan.py"
       - "pyproject.toml"
       - ".github/workflows/fci-morphology-smoke.yml"
   workflow_dispatch:
@@ -26,6 +27,8 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/ido4848/FCI.git external/FCI
           find external/FCI/simulating_neurons/neuron_models -type f -name '*.asc' -print | sort
+      - name: Probe NeuroMorpho for Mohan Table-S1 cells
+        run: python scripts/probe_neuromorpho_mohan.py
       - name: Extract label-free V22 features
         run: |
           mkdir -p artifacts
