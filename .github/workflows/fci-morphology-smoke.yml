@@ -33,6 +33,39 @@ jobs:
             external/FCI/simulating_neurons/neuron_models \
             --csv artifacts/fci_morphology_features.csv \
             --json artifacts/fci_morphology_features.json
+      - name: Cross-check ordinary features against NeuroM
+        run: |
+          python - <<'PY'
+          import json
+          import numpy as np
+          import neurom as nm
+          from neurom.features import neurite as nf
+
+          rows = json.load(open('artifacts/fci_morphology_features.json', encoding='utf-8'))
+          for row in rows:
+              morph = nm.load_morphology(row['path'])
+              dendrites = [n for n in morph.neurites if n.type != nm.AXON]
+              reference = {
+                  'total_dendritic_length': sum(nf.total_length(n) for n in dendrites),
+                  'total_dendritic_area': sum(nf.total_area(n) for n in dendrites),
+                  'number_of_bifurcations': sum(nf.number_of_bifurcations(n) for n in dendrites),
+                  'number_of_leaves': sum(nf.number_of_leaves(n) for n in dendrites),
+                  'longest_root_to_tip_path': max(
+                      value
+                      for n in dendrites
+                      for value in nf.terminal_path_lengths(n)
+                  ),
+              }
+              print(row['file'])
+              for key, expected in reference.items():
+                  observed = row[key]
+                  print(f'  {key}: v22={observed} neurom={expected}')
+                  if isinstance(expected, (int, np.integer)):
+                      if observed != int(expected):
+                          raise SystemExit(f'{row["file"]}: mismatch in {key}')
+                  elif not np.isclose(observed, expected, rtol=1e-7, atol=1e-7):
+                      raise SystemExit(f'{row["file"]}: mismatch in {key}')
+          PY
       - name: Audit morphology count
         run: |
           python - <<'PY'
