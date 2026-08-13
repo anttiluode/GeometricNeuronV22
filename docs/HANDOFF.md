@@ -69,9 +69,13 @@ The authors' public repo already provides rat L2 TPC and Hay `cell1`. The remain
 ## New mechanism distinctions to retain
 
 1. **operator capacity**: geometry changes electrical propagation and compartmentalization;
-2. **address capacity**: in the paper, synapse count scales with dendritic length, so larger trees also expose more input sites.
+2. **address/convergence capacity**: the paper describes one excitatory and one inhibitory input source per micrometer of dendritic length, so a larger tree carries more nominal afferent sources.
 
-A later fixed-input-budget experiment can separate them, but not before the frozen FCI gate.
+A source-code audit added an important correction. The released simulator does not expose every nominal one-micrometer source as a separate TCN input channel. Sources are pooled into one excitatory and one inhibitory super-synapse per NEURON segment, and the public model discretizations appear deliberately tuned to about 1040 dendritic segments per morphology. For the public human 1125, rat L2, and rat Hay L5 models, cable length divided by released mean segment length is approximately 1040 in all three cases.
+
+Therefore do **not** claim a simple FCI input-dimensionality confound. The code largely kills that explanation. The surviving post-gate question is subtler: operator geometry versus the number of nominal afferent sources and their convergence within a matched segment-level interface. See `INPUT_ADDRESS_VS_OPERATOR.md`.
+
+That same note now records a PivotPoint bridge: define a local dendritic intervention by its future receiver trajectory and ask for the effective number of materially distinct location-to-receiver transfer responses. This is a post-gate mechanism idea, not part of v0.1 and not a consciousness claim.
 
 A physically derived passive cable operator using the paper's common Cm/Ra/Rm is also documented as a post-gate v0.2. Do not swap it into v0.1 after seeing target results.
 
@@ -87,5 +91,6 @@ A physically derived passive cable operator using the paper's common Cm/Ra/Rm is
 
 - KYY: geometry must beat strong simple baselines.
 - FunctionalArbors: propagation is not credit assignment.
+- PivotPoint: nominal options are not useful control degrees of freedom unless they create materially different reachable consequences.
 - GeometricNeuronPlusField: do not import the failed generic-HH/AIS positive claims.
 - No extra graph features may be added to rescue the v0.1 FCI gate.
