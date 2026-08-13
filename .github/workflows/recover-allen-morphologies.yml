@@ -23,24 +23,15 @@ jobs:
           python -m pip install -e '.[morphology]'
       - name: Probe current Allen RMA identifier types
         run: python scripts/probe_allen_identifiers.py
-      - name: Recover Allen Table-S1 morphologies currently resolvable as specimens
-        id: recover
-        continue-on-error: true
+      - name: Recover resolvable Allen Table-S1 morphologies
         run: |
           python scripts/recover_allen_table_s1.py \
             --work-dir data/allen \
-            --receipt artifacts/allen_recovery.json
-      - name: Show partial receipt
-        if: always()
-        run: |
-          if [ -f artifacts/allen_recovery.json ]; then
-            cat artifacts/allen_recovery.json
-          else
-            echo "Recovery script aborted before writing a receipt."
-          fi
+            --receipt artifacts/allen_recovery.json \
+            --allow-unresolved
+      - name: Show receipt including unresolved IDs
+        run: cat artifacts/allen_recovery.json
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: allen-recovery-receipt
           path: artifacts/
-          if-no-files-found: warn
