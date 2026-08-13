@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from urllib.parse import quote
 from urllib.request import urlopen
 
 from geometric_neuron_v22 import full_feature_row, load_neurom_cable_tree
@@ -16,7 +17,14 @@ TARGETS = {
     "1148": "1148_Mohan_etal_2015",
     "1125": "1125_Mohan_etal_2015",
 }
-URL = "https://neuromorpho.org/dableFiles/dekock/Source-Version/{name}.swc"
+
+# NeuroMorpho's current FAQ documents standardized morphology files as:
+# /dableFiles/[archive lower case]/CNG version/[neuron name].CNG.swc
+# Original/source files are currently not programmatically accessible there.
+CNG_URL = (
+    "https://neuromorpho.org/dableFiles/dekock/"
+    "CNG%20version/{name}.CNG.swc"
+)
 
 
 def floor_swc_diameter(source: Path, target: Path, minimum_diameter: float = 0.3) -> int:
@@ -51,9 +59,11 @@ def main() -> None:
 
     rows = []
     for identifier, name in TARGETS.items():
-        source_url = URL.format(name=name)
-        raw = args.work_dir / f"{name}.swc"
-        floored = args.work_dir / f"{name}_dmin03.swc"
+        # quote() is retained for names with spaces/special characters even though the
+        # current five names are simple ASCII identifiers.
+        source_url = CNG_URL.format(name=quote(name, safe="_-."))
+        raw = args.work_dir / f"{name}.CNG.swc"
+        floored = args.work_dir / f"{name}_dmin03.CNG.swc"
         raw.write_bytes(urlopen(source_url, timeout=60).read())
         edits = floor_swc_diameter(raw, floored)
         tree = load_neurom_cable_tree(floored)
@@ -61,7 +71,8 @@ def main() -> None:
             "table_identifier": identifier,
             "neuron_name": name,
             "archive": "DeKock",
-            "source_url_kind": "NeuroMorpho Source-Version",
+            "representation": "NeuroMorpho standardized CNG SWC",
+            "source_url": source_url,
             "diameter_floor_um": 0.3,
             "radius_values_raised": edits,
             "raw_sha256": digest(raw),
