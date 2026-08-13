@@ -1,0 +1,36 @@
+name: recover-markram-known
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/download_markram_known.py"
+      - "scripts/floor_morphio_diameters.py"
+      - ".github/workflows/recover-markram-known.yml"
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install morphology dependencies
+        run: python -m pip install -e '.[morphology]'
+      - name: Download mapped public sources
+        run: python scripts/download_markram_known.py --work-dir external/markram --receipt artifacts/markram_sources.json
+      - name: Apply 0.3 micrometer floor
+        run: |
+          python scripts/floor_morphio_diameters.py external/markram/229_1.asc external/markram/229_1_dmin03.asc
+          python scripts/floor_morphio_diameters.py external/markram/229_5.asc external/markram/229_5_dmin03.asc
+          python scripts/floor_morphio_diameters.py external/markram/TTPC_1_232_1.asc external/markram/TTPC_1_232_1_dmin03.asc
+      - name: Extract frozen label-free features
+        run: |
+          python scripts/extract_morphology_features.py external/markram --csv artifacts/markram_known_features.csv --json artifacts/markram_known_features.json
+          sha256sum external/markram/*_dmin03.asc > artifacts/markram_known_sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: markram-known
+          path: artifacts/
