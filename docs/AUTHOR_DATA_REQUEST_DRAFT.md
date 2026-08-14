@@ -10,7 +10,7 @@ I am trying to reproduce a small morphology-only analysis on the 24 neuron model
 
 > Aizenbud et al. (2026), *Dendritic morphology and synaptic nonlinearities enhance functional complexity in human cortical neurons*, PNAS, e2533168123.
 
-The paper's Data, Materials, and Software Availability statement says that the morphologies and neuron-model data were deposited in the cited `ido4848/FCI` GitHub repository. The current repository exposes four morphology files (rat L2 TPC, rat Hay L5 `cell1`, human `2057`, and human `1125`). I have recovered several additional Table-S1 cells from their cited public source archives, but I do not want to guess among multiple plausible source exemplars.
+The paper's Data, Materials, and Software Availability statement says that the morphologies and neuron-model data were deposited in the cited `ido4848/FCI` GitHub repository. The current repository exposes four morphology files (rat L2 TPC, rat Hay L5 `cell1`, human `2057`, and human `1125`). I also checked the reachable public repository history before the January 2026 restructure; the pre-restructure tree appears to contain the same four morphology files rather than the full Table-S1 panel. I have recovered several additional Table-S1 cells independently from their cited public source archives, but I do not want to guess among multiple plausible source exemplars.
 
 Could you provide either the exact morphology files used for the remaining rows, or a mapping from the Table-S1 identifiers/m-types to their source morphology filenames/IDs?
 
