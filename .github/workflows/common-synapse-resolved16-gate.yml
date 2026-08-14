@@ -1,0 +1,26 @@
+name: common-synapse-resolved16-gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/run_common_synapse_resolved16_gate.py'
+      - 'data/frozen_panel_v01.csv'
+      - 'data/fci_targets_common_rat_synapse_figs5.csv'
+      - '.github/workflows/common-synapse-resolved16-gate.yml'
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy
+      - name: Run frozen common-synapse resolved-16 gate
+        run: python scripts/run_common_synapse_resolved16_gate.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: common-synapse-resolved16-result
+          path: artifacts/common_synapse_resolved16_result.json
