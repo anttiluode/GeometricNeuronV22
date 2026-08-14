@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Geometric Neuron, Evolved — GeometricNeuronV22</title>
+<meta name="description" content="A spatially addressed, stateful dynamical medium with a severe readout bottleneck. The evolved statement of the Geometric Neuron, with its honest ledger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --slide:#E9EBE4;
+    --slide-deep:#DFE2D9;
+    --ink:#131A1C;
+    --graphite:#5C6668;
+    --rule:#C4C9BE;
+    --killed:#C4562E;
+    --live:#1B6F65;
+    --measure:1.5;
+  }
+
+  *{box-sizing:border-box;}
+
+  html{-webkit-text-size-adjust:100%;}
+
+  body{
+    margin:0;
+    background:var(--slide);
+    color:var(--ink);
+    font-family:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    font-weight:400;
+    font-size:17px;
+    line-height:var(--measure);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+
+  .eyebrow{
+    font-family:"IBM Plex Sans Condensed",Arial Narrow,sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--graphite);
+  }
+
+  .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;}
+
+  a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--rule);}
+  a:hover{text-decoration-color:var(--live);}
+  a:focus-visible{outline:2px solid var(--live);outline-offset:3px;}
+
+  /* ---------- masthead ---------- */
+
+  .masthead{
+    border-bottom:1px solid var(--rule);
+    padding:22px 0 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 28px;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+
+  .repo{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    letter-spacing:.01em;
+  }
+
+  .repo strong{font-weight:500;}
+  .masthead .file{font-size:12px;color:var(--graphite);}
+
+  /* ---------- hero ---------- */
+
+  .hero{padding:78px 0 34px;}
+  .hero .eyebrow{margin-bottom:26px;}
+
+  .thesis{
+    font-family:"IBM Plex Serif",Georgia,serif;
+    font-weight:300;
+    font-size:clamp(25px,3.5vw,42px);
+    line-height:1.28;
+    letter-spacing:-0.015em;
+    margin:0;
+    max-width:22ch;
+  }
+
+  .thesis em{font-style:normal;border-bottom:2px solid var(--live);padding-bottom:1px;}
+
+  .thesis-tail{
+    margin:30px 0 0;
+    max-width:56ch;
+    color:var(--graphite);
+    font-size:18px;
+  }
+
+  .thesis-tail strong{color:var(--ink);font-weight:500;}
+
+  /* ---------- figure ---------- */
+
+  .figure{
+    margin:56px 0 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding:34px 0 26px;
+  }
+
+  .figure svg{width:100%;height:auto;display:block;}
+  .figcap{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:12px 44px;
+    margin-top:22px;
+    font-size:15px;
+    color:var(--graphite);
+  }
+
+  .figcap b{
+    display:block;
+    font-family:"IBM Plex Sans Condensed",Arial Narrow,sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin-bottom:5px;
+  }
+
+  .figcap .mono{color:var(--ink);font-size:14px;}
+
+  /* ---------- generic section ---------- */
+
+  section{padding:64px 0 0;}
+  .sec-head{
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:34px;
+    border-top:1px solid var(--rule);
+    padding-top:16px;
+    margin-bottom:30px;
+  }
+
+  .sec-head h2{
+    margin:0;
+    font-family:"IBM Plex Serif",Georgia,serif;
+    font-weight:400;
+    font-size:26px;
+    letter-spacing:-0.01em;
+    line-height:1.25;
+  }
+
+  .sec-head p{margin:10px 0 0;color:var(--graphite);font-size:16px;max-width:56ch;}
+
+  .body-col{
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:34px;
+  }
+
+  .body-col > .gutter{font-size:0;}
+  .prose{max-width:64ch;}
+  .prose p{margin:0 0 17px;}
+  .prose p:last-child{margin-bottom:0;}
+  .prose .aside{color:var(--graphite);font-size:15px;}
+
+  /* ---------- correspondence ---------- */
+
+  .corr{
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:34px;
+  }
+
+  .corr-list{margin:0;padding:0;list-style:none;}
+  .corr-list li{
+    display:grid;
+    grid-template-columns:minmax(0,10.5rem) 26px minmax(0,1fr);
+    gap:0 16px;
+    align-items:start;
+    padding:17px 0;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .corr-list li:first-child{border-top:1px solid var(--rule);}
+  .was{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    color:var(--graphite);
+    line-height:1.5;
+    padding-top:2px;
+  }
+
+  .arrow{color:var(--live);font-size:15px;line-height:1.5;padding-top:2px;}
+  .now b{
+    display:block;
+    font-family:"IBM Plex Sans Condensed",Arial Narrow,sans-serif;
+    font-weight:600;
+    font-size:17px;
+    letter-spacing:.005em;
+    margin-bottom:3px;
+  }
+
+  .now span{font-size:15px;color:var(--graphite);display:block;max-width:52ch;}
+
+  /* ---------- stack ---------- */
+
+  .stack{
+    margin:0;
+    padding:0;
+    list-style:none;
+    max-width:640px;
+  }
+
+  .stack li{
+    display:grid;
+    grid-template-columns:22px minmax(0,1fr);
+    gap:16px;
+    align-items:baseline;
+    padding:9px 0 9px;
+  }
+
+  .stack .tick{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:var(--rule);
+  }
+
+  .stack .lbl{
+    font-family:"IBM Plex Sans Condensed",Arial Narrow,sans-serif;
+    font-weight:600;
+    font-size:17px;
+  }
+
+  .stack .note{color:var(--graphite);font-size:15px;font-family:"IBM Plex Serif",Georgia,serif;font-weight:400;}
+  .stack li.slow .lbl{color:var(--graphite);}
+  .stack li.out .lbl{color:var(--live);}
+
+  /* ---------- ledger ---------- */
+
+  .ledger{margin:0;padding:0;list-style:none;}
+  .ledger > li{
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:34px;
+    padding:24px 0;
+    border-top:1px solid var(--rule);
+  }
+
+  .ledger > li:last-child{border-bottom:1px solid var(--rule);}
+  .tag{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    line-height:1.4;
+    padding-top:4px;
+  }
+
+  .tag::before{
+    content:"";
+    display:inline-block;
+    width:9px;height:9px;
+    margin-right:8px;
+    vertical-align:baseline;
+    background:var(--graphite);
+  }
+
+  .tag.k{color:var(--killed);}
+  .tag.k::before{background:var(--killed);}
+  .tag.m{color:var(--live);}
+  .tag.m::before{background:var(--live);}
+  .tag.o{color:var(--ink);}
+  .tag.o::before{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink);}
+  .tag.b{color:var(--graphite);}
+  .tag.b::before{background:transparent;box-shadow:inset 0 0 0 1.5px var(--graphite);opacity:.7;}
+
+  .claim{max-width:60ch;}
+  .claim h3{
+    margin:0 0 8px;
+    font-family:"IBM Plex Sans Condensed",Arial Narrow,sans-serif;
+    font-weight:600;
+    font-size:19px;
+    line-height:1.32;
+    letter-spacing:.005em;
+  }
+
+  .claim p{margin:0 0 10px;font-size:16px;}
+  .claim p:last-child{margin-bottom:0;}
+  .evidence{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:13px;
+    color:var(--graphite);
+    line-height:1.65;
+    background:var(--slide-deep);
+    padding:11px 14px;
+    margin-top:12px;
+    border-left:2px solid var(--rule);
+    overflow-x:auto;
+    white-space:pre;
+  }
+
+  .claim .evidence.k{border-left-color:var(--killed);}
+  .claim .evidence.m{border-left-color:var(--live);}
+
+  /* ---------- not-claimed ---------- */
+
+  .nots{
+    margin:0;padding:0;list-style:none;
+    max-width:62ch;
+  }
+
+  .nots li{
+    padding:12px 0 12px 28px;
+    border-bottom:1px solid var(--rule);
+    position:relative;
+    font-size:16px;
+  }
+
+  .nots li::before{
+    content:"×";
+    position:absolute;left:4px;top:12px;
+    color:var(--killed);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:15px;
+  }
+
+  /* ---------- close ---------- */
+
+  .close{
+    margin:76px 0 0;
+    border-top:2px solid var(--ink);
+    padding:26px 0 96px;
+  }
+
+  .close .line{
+    font-family:"IBM Plex Serif",Georgia,serif;
+    font-style:italic;
+    font-weight:300;
+    font-size:clamp(21px,2.6vw,30px);
+    line-height:1.35;
+    margin:0 0 26px;
+    max-width:26ch;
+  }
+
+  .close .ethic{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    color:var(--graphite);
+  }
+
+  .close .ethic span{color:var(--ink);}
+
+  /* ---------- motion ---------- */
+
+  .draw{
+    stroke-dasharray:var(--len,600);
+    stroke-dashoffset:var(--len,600);
+    animation:draw 1.5s cubic-bezier(.3,.7,.3,1) forwards;
+  }
+
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .fade{opacity:0;animation:fade .8s ease forwards;}
+  @keyframes fade{to{opacity:1;}}
+
+  @media (prefers-reduced-motion: reduce){
+    .draw,.fade{animation:none;stroke-dashoffset:0;opacity:1;}
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width:820px){
+    .sec-head,.body-col,.corr,.ledger > li{grid-template-columns:1fr;gap:14px;}
+    .body-col > .gutter,.corr > .gutter{display:none;}
+    .figcap{grid-template-columns:1fr;}
+    .corr-list li{grid-template-columns:1fr;gap:6px;}
+    .arrow{display:none;}
+    .was::after{content:" ↓";color:var(--live);}
+    .tag{padding-top:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="repo"><strong>anttiluode / GeometricNeuronV22</strong></div>
+    <div class="repo file"><a href="simulator.html">run simulator →</a> · docs/GEOMETRIC_NEURON_EVOLVED.md · rev. Aug 2026</div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">The geometric neuron, evolved</div>
+    <h1 class="thesis">A useful working model treats a neuron as a spatially addressed, <em>stateful dynamical medium</em> with a severe readout bottleneck.</h1>
+    <p class="thesis-tail">
+      Inputs write <strong>locally</strong>. Morphology sets transfer and which regions can influence one another.
+      Local nonlinear state changes what a write <em>means</em>. Downstream cells do not receive the full dendritic
+      map; soma/axon dynamics project it into a much smaller output. So the computational degrees of freedom are not
+      branches, modes or synapses — they are
+      <strong>the internal differences that survive as materially distinct downstream futures</strong>.
+    </p>
+    <p class="thesis-tail mono" style="font-size:14px;margin-top:22px;">
+      <a href="simulator.html">run the accident and the evolved toy side by side →</a>
+    </p>
+  </div>
+
+  <!-- ============ FIGURE ============ -->
+  <div class="figure">
+    <svg viewBox="0 0 920 380" role="img" aria-label="A dendritic arbor with many write sites converges through a single soma; the resulting somatic trajectories mostly collapse onto one another, with only a few remaining distinct.">
+      <g fill="none" stroke="#131A1C" stroke-width="1.4" stroke-linecap="round">
+        <path class="draw" style="--len:220;animation-delay:.05s" d="M330,190 C300,150 272,120 252,80"/>
+        <path class="draw" style="--len:130;animation-delay:.35s" d="M252,80 C237,55 216,45 196,35"/>
+        <path class="draw" style="--len:130;animation-delay:.4s" d="M252,80 C231,70 206,72 181,66"/>
+        <path class="draw" style="--len:200;animation-delay:.1s" d="M330,190 C290,175 255,160 216,145"/>
+        <path class="draw" style="--len:150;animation-delay:.45s" d="M216,145 C190,138 165,132 141,126"/>
+        <path class="draw" style="--len:200;animation-delay:.15s" d="M330,190 C285,190 240,190 196,192"/>
+        <path class="draw" style="--len:150;animation-delay:.5s" d="M196,192 C166,192 136,196 106,198"/>
+        <path class="draw" style="--len:200;animation-delay:.2s" d="M330,190 C292,205 258,222 223,238"/>
+        <path class="draw" style="--len:150;animation-delay:.55s" d="M223,238 C197,250 171,258 146,268"/>
+        <path class="draw" style="--len:210;animation-delay:.25s" d="M330,190 C305,225 285,255 266,290"/>
+        <path class="draw" style="--len:140;animation-delay:.6s" d="M266,290 C256,312 246,325 236,342"/>
+      </g>
+
+      <g fill="#1B6F65" class="fade" style="animation-delay:.9s">
+        <circle cx="196" cy="35" r="3.4"/><circle cx="181" cy="66" r="3.4"/>
+        <circle cx="141" cy="126" r="3.4"/><circle cx="216" cy="145" r="3.4"/>
+        <circle cx="106" cy="198" r="3.4"/><circle cx="196" cy="192" r="3.4"/>
+        <circle cx="146" cy="268" r="3.4"/><circle cx="223" cy="238" r="3.4"/>
+        <circle cx="236" cy="342" r="3.4"/><circle cx="266" cy="290" r="3.4"/>
+        <circle cx="252" cy="80" r="3.4"/><circle cx="290" cy="178" r="3.4"/>
+        <circle cx="163" cy="160" r="3.4"/><circle cx="185" cy="255" r="3.4"/>
+      </g>
+
+      <g class="fade" style="animation-delay:1.05s">
+        <circle cx="330" cy="190" r="9" fill="#131A1C"/>
+        <path d="M339,190 H404" stroke="#131A1C" stroke-width="1.8"/>
+        <path d="M398,185 L406,190 L398,195 Z" fill="#131A1C"/>
+      </g>
+
+      <!-- collapsed bundle -->
+      <g fill="none" stroke="#5C6668" stroke-width="1.2" opacity=".5">
+        <path class="draw" style="--len:520;animation-delay:1.2s" d="M470,300 C520,300 530,232 575,230 C625,228 655,286 715,296 C775,303 825,300 880,300"/>
+        <path class="draw" style="--len:520;animation-delay:1.25s" d="M470,301 C521,301 532,238 577,236 C627,234 657,289 717,297 C777,304 827,301 880,301"/>
+        <path class="draw" style="--len:520;animation-delay:1.3s" d="M470,299 C519,299 529,226 574,224 C624,222 654,283 714,295 C774,302 824,299 880,299"/>
+        <path class="draw" style="--len:520;animation-delay:1.35s" d="M470,302 C522,302 534,243 579,241 C629,239 659,291 719,298 C779,304 829,302 880,302"/>
+        <path class="draw" style="--len:520;animation-delay:1.4s" d="M470,298 C518,298 528,221 573,219 C623,217 653,281 713,294 C773,301 823,298 880,298"/>
+        <path class="draw" style="--len:520;animation-delay:1.45s" d="M470,303 C523,303 536,247 581,245 C631,243 661,293 721,299 C781,305 831,303 880,303"/>
+      </g>
+
+      <!-- distinct survivors -->
+      <g fill="none" stroke="#1B6F65" stroke-width="1.9">
+        <path class="draw" style="--len:560;animation-delay:1.55s" d="M470,300 C505,300 512,168 552,164 C598,160 626,268 696,290 C756,299 820,298 880,298"/>
+        <path class="draw" style="--len:560;animation-delay:1.65s" d="M470,300 C540,300 566,252 616,246 C670,240 704,283 762,295 C802,299 842,299 880,299"/>
+        <path class="draw" style="--len:600;animation-delay:1.75s" d="M470,300 C506,300 516,242 554,240 C582,238 594,266 617,264 C647,262 657,212 702,211 C752,210 800,286 880,297"/>
+      </g>
+
+      <path d="M462,318 H886" stroke="#C4C9BE" stroke-width="1"/>
+      <path d="M462,120 V318" stroke="#C4C9BE" stroke-width="1"/>
+
+      <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#5C6668" class="fade" style="animation-delay:1.9s">
+        <text x="106" y="368">K write addresses</text>
+        <text x="300" y="368">one readout</text>
+        <text x="462" y="112">h(t) at the soma</text>
+        <text x="892" y="303" fill="#5C6668">collapsed</text>
+        <text x="892" y="216" fill="#1B6F65">distinct</text>
+      </g>
+    </svg>
+
+    <div class="figcap">
+      <div>
+        <b>The measurement</b>
+        Inject the same small input at address <span class="mono">i</span>, record the receiver trajectory
+        <span class="mono">h_i(t)</span>, and assemble
+        <span class="mono">H = [h_1 … h_K]</span>. Normalise, then ask how many columns are actually
+        distinguishable.
+      </div>
+      <div>
+        <b>Why it matters</b>
+        A hundred anatomical locations are not a hundred channels. If they collapse to one normalised somatic
+        response, the geometry bought nothing. Earned structure is when address and state produce genuinely
+        different downstream futures.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ORIGIN ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Origin</div>
+      <div>
+        <h2>What the accident actually was</h2>
+        <p>Stated plainly, because the mythology around it has been expensive.</p>
+      </div>
+    </div>
+    <div class="body-col">
+      <div class="gutter"></div>
+      <div class="prose">
+        <p>
+          A PerceptionLab patch: a homeostatic coupler drove the <em>square size</em> of a checkerboard
+          generator; the resulting image went into a 256-dimensional Image→Vector node, which spatially
+          downsampled and flattened it; a vector splitter returned only outputs 0–3 to the coupler. The loop
+          produced an ECG-like signal at some output dimensions and not others.
+        </p>
+        <p>
+          The V21 autopsy established the mechanism, and it is fully mechanical. <span class="mono">int()</span>
+          on the square size is a quantizer, so the loop is a deterministic map on about fifty discrete cells
+          driven by a variance thermostat. The plateau heights are the aliasing beat between board frequency
+          and sampling grid. Spikes are the amplify branch's duty cycle. The tap test — <em>which pixels the
+          readout touches decides whether the loop lives or dies</em> — reproduced on the real instrument.
+        </p>
+        <p class="aside">
+          None of that is a hidden image inside a neuron. What it did force into view was the combination of
+          space, local write, limited readout, state and recurrence. That combination is the inheritance.
+          The checkerboard was noise. The loop was the clue.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CORRESPONDENCE ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Correspondence</div>
+      <div>
+        <h2>What each piece became</h2>
+        <p>The old boxes do not survive as objects. They survive as constraints.</p>
+      </div>
+    </div>
+    <div class="corr">
+      <div class="gutter"></div>
+      <ul class="corr-list">
+        <li>
+          <div class="was">CheckerboardNode</div>
+          <div class="arrow">→</div>
+          <div class="now">
+            <b>Addressable distributed state</b>
+            <span>Synapses write locally into membrane and conductance state. There is somewhere to write, and where you write matters. No exotic medium required.</span>
+          </div>
+        </li>
+        <li>
+          <div class="was">ImageToVector<br>(256-d)</div>
+          <div class="arrow">→</div>
+          <div class="now">
+            <b>Projection bottleneck</b>
+            <span>The soma does not vectorise a picture. It is the narrow aperture through which an enormous dendritic state reaches anyone downstream. Internal richness only counts if it survives the aperture.</span>
+          </div>
+        </li>
+        <li>
+          <div class="was">VectorSplitter<br>(taps 0–3)</div>
+          <div class="arrow">→</div>
+          <div class="now">
+            <b>Selective access</b>
+            <span>The accident made 256 numbers and then made four of them consequential. Count distinctions that produce different downstream consequences, not anatomical parts.</span>
+          </div>
+        </li>
+        <li>
+          <div class="was">Homeostatic<br>Coupler</div>
+          <div class="arrow">→</div>
+          <div class="now">
+            <b>Slow context</b>
+            <span>Fast writable local dynamics running inside slower variables that move gains, thresholds and which interactions are possible. We do not get to name which biological variable that is by analogy.</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ STACK ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">The stack</div>
+      <div>
+        <h2>One pass through the medium</h2>
+        <p>Read downward. Every stage can fail independently, which is the point of separating them.</p>
+      </div>
+    </div>
+    <div class="body-col">
+      <div class="gutter"></div>
+      <ul class="stack">
+        <li class="slow"><span class="tick mono">◦</span><span><span class="lbl">Slow context</span> <span class="note">— gains, thresholds, what is possible at all</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Local write</span> <span class="note">— synaptic input at an address</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Dendritic geometry</span> <span class="note">— transfer, attenuation, compartmentalisation</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Propagation and mixing</span> <span class="note">— what meets what, and when</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Local nonlinearity</span> <span class="note">— the existing state decides what the write means</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Distributed state</span> <span class="note">— large, and mostly unread</span></span></li>
+        <li><span class="tick mono">│</span><span><span class="lbl">Soma / axon</span> <span class="note">— the severe bottleneck</span></span></li>
+        <li class="out"><span class="tick mono">▸</span><span><span class="lbl">Receiver-visible future</span> <span class="note">— the only thing that counts</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ LEDGER ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Ledger</div>
+      <div>
+        <h2>Standing of every claim above</h2>
+        <p>Scan the left column. Orange is what this repo killed, including things it wanted to be true.</p>
+      </div>
+    </div>
+
+    <ul class="ledger">
+
+      <li>
+        <div class="tag k">Killed · V22</div>
+        <div class="claim">
+          <h3>Whole-tree spectral summaries are not extra computation</h3>
+          <p>
+            Three frozen operator features on the structural graph — low-spectrum entropy, soma/root modal
+            participation, low-mode spacing irregularity — looked spectacular against a size baseline of
+            log&nbsp;area + log&nbsp;longest&nbsp;path. Then a one-bit species variable beat them, and under the
+            paper's own matched-synapse condition they made prediction <em>worse</em>.
+          </p>
+          <div class="evidence k">original FCI target      B2 .112   B2+G .755   species alone .796
+matched-synapse target   B2 .628   B2+G .608   species alone .006
+                         MAE change -3.6%   sign-flip p = .794</div>
+          <p>
+            The features were a morphological species fingerprint taking a shortcut through synaptic physics.
+            This equation does not get resurrected by adding prettier graph features.
+          </p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tag k">Killed · V13</div>
+        <div class="claim">
+          <h3>Passive geometry alone cannot prefer a direction</h3>
+          <p>
+            Four separate attempts to get directed flow out of angled passive geometry returned a reciprocity
+            ratio of 1.0000 to five decimals at every skew angle. The relevant constraint is reciprocity:
+            a linear passive cable with symmetric couplings has symmetric transfer impedance even though it is
+            dissipative. Shape alone does not create a preferred transfer direction.
+          </p>
+          <p class="aside">
+            Consequence for this document: passive morphology can shape transfer, attenuation and delay, but a
+            directional or non-additive effect needs something beyond symmetric linear coupling — for example
+            state-dependent conductance, active dynamics, or an explicit coupling bias.
+          </p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tag m">Measured · external</div>
+        <div class="claim">
+          <h3>Cable size and extent carry most of it, once physics is matched</h3>
+          <p>
+            Aizenbud et al. (PNAS 2026) find total dendritic area is the single best morphological predictor of
+            functional complexity, that bifurcation <em>count</em> is weak, and that the species gap survives
+            equalising synaptic parameters. Their allocation result is the interesting part: length invested in
+            bifurcation branches rather than trunk or terminal branches predicts higher complexity.
+          </p>
+          <div class="evidence m">bifurcation count               R² .29
+total dendritic area            R² .74
++ longest bifurcation branch    R² .81
+best triplet / quadruple        R² .85 / .88
+matched rat synapses, human still higher   p = .022</div>
+          <p>This is their result, not ours. It is the baseline any successor has to beat.</p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tag o">Open</div>
+        <div class="claim">
+          <h3>Does address plus state produce distinguishable receiver futures?</h3>
+          <p>
+            The figure at the top is the measurement prescription; the companion simulator implements the toy version. Hold the input budget and the number
+            of intervention sites fixed, vary the address, collect <span class="mono">H</span>, normalise per
+            feature, and count what remains distinguishable. Then switch local nonlinearity on and ask how much
+            the distinguishable set changes.
+          </p>
+          <p class="aside">
+            Cable theory already describes location-to-location transfer through Green's functions; that part is
+            old. What is not settled is whether the effective dimensionality of that transfer dictionary differs
+            across real reconstructed trees after total area, total length and path statistics are matched.
+          </p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tag b">Bet</div>
+        <div class="claim">
+          <h3>Slow structure edits the fast control surface</h3>
+          <p>
+            The proposal is that slow variables do not learn a replacement computation. They move where the
+            gate sits, how long it is, which routes are available, and what a given input can recruit — leaving
+            the fast machinery in place.
+          </p>
+          <p class="aside">
+            Stated as a bet because the nearest measured test of its consequence has already returned a null:
+            precisely timed low-bandwidth intervention in human cortex changed <em>which</em> response the
+            network produced without increasing the dimensionality of its reachable futures. Capacity is not
+            access, and access was the thing we could not measure by counting.
+          </p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tag b">Boundary</div>
+        <div class="claim">
+          <h3>“Field” means ordinary membrane state</h3>
+          <p>
+            Spatially distributed voltage and conductance is already enough to instantiate everything above.
+            No ephaptic mechanism, no new physics, and no holographic storage claim is required or intended.
+            If a successor needs one, it has to earn it separately.
+          </p>
+        </div>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- ============ NOT CLAIMED ============ -->
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Out of scope</div>
+      <div>
+        <h2>What this does not claim</h2>
+        <p>Kept explicit so a later reader — human or model — does not inherit more than was earned.</p>
+      </div>
+    </div>
+    <div class="body-col">
+      <div class="gutter"></div>
+      <ul class="nots">
+        <li>That a neuron contains an image, a hologram, or a hidden checkerboard.</li>
+        <li>That complicated dendrites are surprising. Dendritic nonlinear computation is established work, not our finding.</li>
+        <li>That any of this explains subjective experience, or that a control architecture implies one.</li>
+        <li>That the disease results from the earlier repos survive. Most did not; the audits are in the history.</li>
+        <li>That morphology is computation. The matched-synapse condition exists precisely because it is not.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="close">
+    <p class="line">The checkerboard was noise. The loop was the clue.</p>
+    <p class="ethic"><span>Do not hype. Do not lie. Just show.</span> — every claim on this page carries its standing, and the failures are kept.</p>
+  </div>
+
+</div>
+</body>
+</html>
