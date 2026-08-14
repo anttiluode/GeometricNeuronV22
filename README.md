@@ -2,9 +2,23 @@
 
 An external-test repository for the Geometric Neuron line.
 
-## Current verdict
+## The concept after contact with real neurons
 
-The first abstract operator test has now met a genuinely useful external null.
+The original Geometric Neuron began with an accidental Perception Laboratory loop: a homeostatic coupler drove a checkerboard, the image was compressed into a vector, a few vector coordinates were fed back into the coupler, and the closed system produced unexpectedly structured dynamics.
+
+The literal boxes are not a neuron model. But after the Aizenbud 2026 collision and the V22 null, a narrower idea survives:
+
+> **A neuron can be viewed as a spatially addressed, stateful dynamical medium. Inputs write locally; morphology determines transfer and interaction; nonlinear local state changes what a write means; and the soma/axon acts as a severe readout bottleneck. The useful computational degrees of freedom are the internal differences that survive as materially distinct downstream futures.**
+
+The checkerboard is no longer the hypothesis. The **writable spatial state + selective readout + feedback** is the useful descendant.
+
+Read the full conceptual reset:
+
+- [`docs/GEOMETRIC_NEURON_EVOLVED.md`](docs/GEOMETRIC_NEURON_EVOLVED.md)
+
+## Current external verdict
+
+The first abstract operator test has met a genuinely useful external null.
 
 On a provenance-resolved 16-cell subset of Aizenbud et al. 2026, the frozen graph/modal features `G1/G2/G3` initially looked spectacular on the original rat-vs-human FCI target:
 
@@ -40,6 +54,7 @@ See:
 - `docs/COMMON_SYNAPSE_FIGS5_RECEIPT.md`
 - `docs/COMMON_SYNAPSE_RESOLVED16_GATE.md`
 - `docs/COMMON_SYNAPSE_RESOLVED16_RESULT.md`
+- `docs/INPUT_ADDRESS_VS_OPERATOR.md`
 - `docs/HANDOFF.md`
 
 ## Provenance work remains open
@@ -54,4 +69,8 @@ Convenient replacement cells are not allowed. `docs/FCI_REPOSITORY_HISTORY_AUDIT
 
 ## If the line continues
 
-Do **not** add more graph statistics to rescue the exposed FCI target. A physical passive-cable operator would be a genuinely different hypothesis and should face a fresh external target/dataset rather than being tuned against Fig. S5.
+Do **not** add more graph statistics to rescue the exposed FCI target.
+
+The evolved concept points instead toward fresh external tests of **local write -> state-dependent dendritic propagation/interactions -> receiver-distinguishable future**, against strong ordinary morphology/cable baselines. A physical passive-cable operator by itself is only a baseline unless it predicts something beyond area/path/branch-allocation summaries.
+
+The next question should be allowed to fail too.
