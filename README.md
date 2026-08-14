@@ -8,13 +8,17 @@ The original Geometric Neuron began with an accidental Perception Laboratory loo
 
 The literal boxes are not a neuron model. But after the Aizenbud 2026 collision and the V22 null, a narrower idea survives:
 
-> **A neuron can be viewed as a spatially addressed, stateful dynamical medium. Inputs write locally; morphology determines transfer and interaction; nonlinear local state changes what a write means; and the soma/axon acts as a severe readout bottleneck. The useful computational degrees of freedom are the internal differences that survive as materially distinct downstream futures.**
+> **A neuron can be treated as a spatially addressed, stateful dynamical medium. Inputs write locally; morphology shapes transfer and which regions can influence one another; nonlinear local state changes what a write means; and soma/axon dynamics project a much larger dendritic state into a smaller downstream-visible output. The useful computational degrees of freedom are the internal differences that survive as materially distinct downstream futures.**
 
 The checkerboard is no longer the hypothesis. The **writable spatial state + selective readout + feedback** is the useful descendant.
 
-Read the full conceptual reset:
+Read and run it:
 
-- [`docs/GEOMETRIC_NEURON_EVOLVED.md`](docs/GEOMETRIC_NEURON_EVOLVED.md)
+- [`docs/index.html`](docs/index.html) — visual concept/claim ledger
+- [`docs/simulator.html`](docs/simulator.html) — original loop beside the corrected evolved toy
+- [`docs/GEOMETRIC_NEURON_EVOLVED.md`](docs/GEOMETRIC_NEURON_EVOLVED.md) — full conceptual reset
+
+The simulator is deliberately labelled as a toy. Its right-hand participation ratio is an effective response-diversity statistic, not a literal biological channel count, and its RC-like tree is not a substitute for a biophysical cable model.
 
 ## Current external verdict
 
