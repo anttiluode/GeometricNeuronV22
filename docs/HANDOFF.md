@@ -2,15 +2,21 @@
 
 ## Current state
 
-GeometricNeuronV22 is the clean external-test branch of the Geometric Neuron line.
+GeometricNeuronV22 is the external-test branch of the Geometric Neuron line.
 
-The frozen first question remains:
+The most important new result is now a **clean negative** for the frozen abstract operator features.
 
-> Does a small operator/modal description of real dendritic trees improve held-out prediction of Aizenbud et al.'s Functional Complexity Index beyond a strong ordinary morphology baseline?
+The original resolved-16 Fig. 2 target produced a spectacular B2+G gain, but that target was strongly species-confounded. We therefore recovered the per-cell FCI values from SI Fig. S5, where **all rat and human morphologies are equipped with identical rat-type synapses**, and reran the same frozen B2 versus B2+G comparison.
 
-The analysis design was frozen before FCI outcome exposure. **Blinding is no longer intact**: during morphology provenance work the published Fig. 2 was opened and it prints the cell-level FCI values beside the morphology silhouettes. Do not call later analyses blinded. Features/baselines/inclusion rules may not be redesigned to improve the observed result.
+That cleaner gate says:
 
-## Frozen primary comparison
+```text
+COMMON_SYNAPSE_NO_OPERATOR_ADVANTAGE
+```
+
+Do not restart from the earlier positive and forget this null.
+
+## Frozen v0.1 predictors
 
 ```text
 B2
@@ -23,171 +29,156 @@ B2 + G
   G3 low-mode spacing irregularity
 ```
 
-Fixed ridge `alpha=1`, standardization inside each LOOCV training fold. Primary pass requires improved CV R2, >=10% MAE improvement, positive paired improvement with bootstrap CI > 0, and exact two-sided sign-flip p < .05.
+Fixed ridge `alpha=1`, standardization inside each LOOCV training fold.
 
-## New result: secondary resolved-16 gate PASSED
+No G4/G5 may be added to rescue v0.1 on any already-exposed FCI target.
 
-Because the strict 24-cell panel is blocked by unresolved morphology provenance, a separate provenance-only 16-cell secondary panel was frozen before computation:
+## Original resolved-16 Fig. 2 result
+
+Frozen provenance-resolved subset:
 
 ```text
 orders 1, 5, 6, 7, 11,
        13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24
 ```
 
-GitHub Actions run `31772365592` reran the frozen analysis from the committed feature/target files and completed successfully.
+GitHub Actions run `31772365592`:
 
 ```text
+original Fig. 2 FCI
+
 B2
   CV R2       0.11191
   MAE         0.064400
-  Spearman    0.38529
 
 B2 + G
   CV R2       0.75479
   MAE         0.033082
-  Spearman    0.85882
 
 relative MAE improvement       48.63 %
-mean paired improvement        +0.0313175
 bootstrap 95 % CI              [+0.014656, +0.048506]
-exact two-sided sign-flip p     0.003173828125
+exact sign-flip p               0.00317
 ```
 
-Frozen secondary verdict:
+Frozen secondary verdict was `SECONDARY_OPERATOR_SIGNAL`.
+
+But the immediate species adversary was devastating:
 
 ```text
-SECONDARY_OPERATOR_SIGNAL
+species only       R2 0.7957
+B2 + species       R2 0.8391
+B2 + G + species   R2 0.8237
 ```
 
-Permanent receipt: `artifacts/secondary_resolved16_result.json`.
-Full interpretation: `docs/SECONDARY_RESOLVED16_RESULT.md`.
+So the spectacular result could be a morphology/species fingerprint predicting a target that also contains species-specific synaptic/NMDA physics.
 
-### Do not celebrate yet: species confounding is strong
+See `SECONDARY_RESOLVED16_RESULT.md`.
 
-The resolved subset is 5 rat / 11 human, and FCI strongly separates the species. A post-result boring adversary gives:
+## Cleaner external target recovered from SI Fig. S5
+
+Aizenbud et al. already performed the intervention needed to attack that confound: all 24 morphologies were simulated with the same **rat-type synaptic parameters**.
+
+The final supplement was recovered reproducibly from the official 2026 PMC AWS Open Access dataset. GitHub Actions run `31777248643` succeeded using:
+
+```text
+PMC13367794.1/pnas.2533168123.sapp.pdf
+```
+
+Fig. S5 prints each four-decimal per-cell FCI value above its boxplot and repeats the morphology silhouette below it. The x-axis is sorted by common-synapse FCI, so identity was recovered by matching the repeated silhouette back to Fig. 2 within fixed species/layer groups.
+
+Canonical target table:
+
+```text
+data/fci_targets_common_rat_synapse_figs5.csv
+```
+
+Target recovery receipt:
+
+```text
+docs/COMMON_SYNAPSE_FIGS5_RECEIPT.md
+```
+
+This target is outcome-exposed, not blind. The model and gate were nevertheless frozen before fitting it; see `COMMON_SYNAPSE_RESOLVED16_GATE.md`.
+
+## Common-synapse resolved-16 result: v0.1 FAILS
+
+GitHub Actions run `31778100080` completed successfully.
+
+```text
+common-rat-synapse FCI
+
+B2
+  CV R2       0.627747
+  MAE         0.024057
+  Spearman    0.720588
+
+B2 + G
+  CV R2       0.608452
+  MAE         0.024927
+  Spearman    0.720588
+
+relative MAE improvement       -3.62 %
+mean paired improvement        -0.0008706
+bootstrap 95 % CI              [-0.007255, +0.005164]
+exact two-sided sign-flip p     0.79355
+```
+
+Frozen verdict:
+
+```text
+COMMON_SYNAPSE_NO_OPERATOR_ADVANTAGE
+```
+
+The intervention also kills the old trivial species predictor:
 
 ```text
 species only
-  R2   0.79573
-  MAE  0.029035
-
-B2 + species
-  R2   0.83910
-  MAE  0.027104
-
-B2 + G + species
-  R2   0.82366
-  MAE  0.026425
+  CV R2   0.0061
+  MAE     0.03721
 ```
 
-So a one-bit species indicator alone beats frozen B2+G in CV R2. Within species, G is actively bad in the tiny rat subset (n=5) and only modestly helpful in the human subset (n=11).
-
-Therefore the correct interpretation is:
+and G remains unhelpful after species is supplied:
 
 ```text
-secondary gate:  PASSED
-primary gate:    BLOCKED_INCOMPLETE_PROVENANCE
-warning:         SPECIES_CONFOUND_PLAUSIBLE
+B2 + species       R2 0.6680, MAE 0.02192
+B2 + G + species   R2 0.5518, MAE 0.02650
 ```
 
-The secondary pass is interesting because the frozen operator features did dramatically improve over the predeclared morphology baseline. It is not evidence that the operator adds morphology information beyond species.
-
-## Canonical feature table
-
-Use only:
+Within-species exploratory LOOCV points the same way:
 
 ```text
-data/frozen_panel_v01.csv
+Rat n=5
+  B2     R2 +0.227, MAE 0.01510
+  B2+G   R2 -0.552, MAE 0.02442
+
+Human n=11
+  B2     R2 +0.571, MAE 0.02596
+  B2+G   R2 +0.351, MAE 0.02978
 ```
 
-It contains all 24 identities in paper order, hashes and B2+G features for the 16 recovered rows, with empty feature cells for unresolved rows.
+See `COMMON_SYNAPSE_RESOLVED16_RESULT.md`.
 
-An earlier hand-transcribed JSON contained incorrect longest-path values for three Markram rows. The mismatch was caught by rereading the successful GitHub Actions recovery artifact before the secondary regression. Do not use the old JSON as a feature source.
+## Current scientific interpretation
 
-## Data-availability finding
+The cleanest reading is now:
 
-The final 2026 PNAS article states that morphology/neuron-model data were deposited in `ido4848/FCI`, but the cited repository currently exposes only four morphology files: rat L2 TPC, rat Hay `cell1`, human 2057, human 1125. The older preprint explicitly said only those four examples were public and the rest were available on request.
+> G1/G2/G3 were excellent predictors of the original rat-vs-human mixed-physics target, but they do not add held-out predictive value over ordinary area + path once the original experimenters match synaptic physics across species.
 
-Therefore the current cited deposit is incomplete for exact 24-cell reproduction.
+Therefore **V22 v0.1 does not earn the claim that these abstract graph-modal features capture the morphology-dependent computation measured by FCI**.
 
-A ready-to-review author request is in `docs/AUTHOR_DATA_REQUEST_DRAFT.md`.
+This does **not** undermine the Aizenbud morphology result. In fact, B2 alone becomes strong on the cleaner target (`R2 ~0.63`), which is compatible with the paper's emphasis on dendritic size/extent.
 
-## Recovery state
+Do not reinterpret the old 48.6% MAE gain as mechanistic evidence.
 
-### Author-exact anchors
+## Strict 24-cell original-Fig2 gate
+
+Still:
 
 ```text
-Rat   L2/3  L2 TPC
-Rat   L5    cell1
-Human L5    2057
-Human L2/3  1125
+BLOCKED_INCOMPLETE_PROVENANCE
 ```
 
-### Mohan human source-compatible
-
-```text
-1833
-1496
-1204
-1148
-1125
-```
-
-`1125` provides an author-copy/source-copy calibration showing B2+G stability.
-
-### Allen human
-
-Recovered/processed:
-
-```text
-548494556
-528614014
-539661667
-569818704
-558211203
-```
-
-`790872626` currently resolves as neither Specimen nor NeuronReconstruction in Allen RMA. Do not guess a nearby ID.
-
-### Markram rat
-
-Recovered through public cortical model packages:
-
-```text
-229_1
-  ModelDB L23_PC_cADpyr229_1
-  dend-C170897A-P3_axon-C260897C-P4_-_Clone_4.asc
-
-229_5
-  ModelDB L23_PC_cADpyr229_5
-  dend-C260897C-P3_axon-C220797A-P3_-_Clone_0.asc
-
-TTPC_1 232_1
-  Blue Brain L5_TTPC2_cADpyr232_1
-  dend-C060114A7_axon-C060116A3_-_Clone_2.asc
-```
-
-Actions run `31727584626` downloaded them, applied the paper's 0.3 µm diameter floor, extracted B2+G and hashed the files.
-
-`230_1` and `230_2` remain unresolved because the suffix is shared by multiple L4 PC/SP/SS model families.
-
-### Reimann rat
-
-Still unresolved as unique author-used exemplars:
-
-```text
-L6 IPC
-L4 TPC
-L6 TPC
-L6 UPC
-L5 TPC
-```
-
-Public Blue Brain/Open Brain templates expose plausible canonical defaults, but that is not enough to upgrade them without an authoritative source/author mapping. L6 TPC is additionally taxonomy-ambiguous.
-
-## Strict 24-cell gate status
-
-**BLOCKED_INCOMPLETE_PROVENANCE**
+Eight morphology identities/files remain unresolved:
 
 ```text
 Markram 230_1, 230_2                         2
@@ -198,16 +189,105 @@ Allen   790872626                            1
 Total                                        8
 ```
 
-## Immediate next work
+The clean common-synapse result lowers the scientific priority of spending a long time forcing the original mixed-physics 24-cell gate to completion, but the provenance work remains useful for exact reproducibility.
 
-1. continue seeking authoritative mappings for the eight missing rows, but do not substitute convenient exemplars;
-2. review/send the author data request if public provenance stays blocked;
-3. if all eight are recovered, freeze the complete 24-row table and run the original v0.1 gate once;
-4. when that result exists, explicitly test whether any operator signal survives species/source controls rather than interpreting the secondary pass at face value.
+## Provenance findings
 
-## Post-gate ideas that must not leak backward
+### Public FCI repository is genuinely incomplete for the 24-cell panel
 
-- physical passive-cable operator using the paper's common Cm/Ra/Rm;
+The reachable pre-restructure history of `ido4848/FCI` was audited. The December 2024 / January 2026 trees contain the same four example morphologies as the present repository:
+
+```text
+Rat L2 TPC
+Rat Hay cell1
+Human 2057
+Human 1125
+```
+
+The missing Table-S1 morphologies were not simply removed in the January 2026 restructure, at least not from reachable public default-branch history.
+
+See `FCI_REPOSITORY_HISTORY_AUDIT.md`.
+
+### Strong target-independent Reimann canonical clue
+
+Two independent public Blue Brain SSCx recipe tables agree on:
+
+```text
+L2 TPC  -> mtC191200B_idA.asc   # exactly matches Aizenbud's released anchor
+L4 TPC  -> C310897A-P4.asc
+L6 IPC  -> mtC110301B_idB.asc
+L6 UPC  -> Fluo12_right.asc
+L5 TPC  -> C060114A5.asc
+```
+
+These are strong source-compatible candidates, **not author-exact proof**. `L6 TPC` remains subtype-ambiguous.
+
+See `REIMANN_CANONICAL_RECIPE_AUDIT.md`.
+
+### Markram ambiguity remains real
+
+Recovered source-compatible:
+
+```text
+229_1
+229_5
+TTPC_1 232_1
+```
+
+`230_1`/`230_2` remain ambiguous because public model collections reuse those suffixes across different L4 families. Do not guess.
+
+### Allen
+
+Recovered:
+
+```text
+548494556
+528614014
+539661667
+569818704
+558211203
+```
+
+`790872626` does not resolve as a current Allen Specimen or NeuronReconstruction ID.
+
+## Canonical morphology feature table
+
+Use only:
+
+```text
+data/frozen_panel_v01.csv
+```
+
+An older hand-transcribed JSON has incorrect longest-path values for three Markram rows and is not a canonical feature source.
+
+## Author request
+
+`docs/AUTHOR_DATA_REQUEST_DRAFT.md` is ready for human review. It asks for:
+
+- the exact eight missing morphology mappings/files;
+- confirmation/rejection of the four canonical Reimann mappings;
+- the L6 TPC subtype;
+- clarification of `230_1`, `230_2`, and Allen `790872626`;
+- optionally, the numeric per-cell common-rat-synapse FCI table (now independently recoverable from Fig S5, but an author table would still be a useful cross-check).
+
+Do not send automatically.
+
+## Where to go next
+
+### Do not rescue v0.1
+
+No extra graph statistics on the now-exposed common-synapse target.
+
+### Legitimate new hypothesis, if reopened
+
+The post-gate idea that still has a principled basis is a **physical passive-cable operator** using dendritic radii/lengths and common `Cm/Ra/Rm`, rather than the abstract mass-normalized graph operator.
+
+That is a different model class and must be treated as a new hypothesis, not `G4`.
+
+Because the common-synapse outcomes are now exposed, the preferred validation is an independent external target/dataset or an analysis plan derived wholly from cable theory before any fitting. Do not tune the cable operator against Fig S5.
+
+Other later ideas remain quarantined:
+
 - location-to-soma response dictionary / effective control degrees of freedom;
 - operator capacity versus input-address/convergence capacity;
 - PivotPoint-style slow structural control against strong ordinary/TwinProp baselines.
@@ -217,4 +297,4 @@ Total                                        8
 - KYY: geometry must beat strong simple baselines.
 - FunctionalArbors: propagation is not credit assignment.
 - PivotPoint: nominal options are not useful control degrees of freedom unless they create materially different reachable consequences.
-- No extra graph features may be added to rescue v0.1 after outcome exposure.
+- V22: the matched-synapse experiment killed the abstract G1/G2/G3 mechanistic interpretation. Preserve that kill.
