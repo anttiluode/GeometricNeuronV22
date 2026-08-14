@@ -1,0 +1,14 @@
+{
+  "verdict": "SECONDARY_OPERATOR_SIGNAL",
+  "strict_gate": "BLOCKED_INCOMPLETE_PROVENANCE",
+  "orders": [1,5,6,7,11,13,14,15,16,17,18,20,21,22,23,24],
+  "b2": {"r2": 0.11191082523785922, "mae": 0.06439960841022656, "spearman": 0.3852941176470588},
+  "b2_plus_g": {"r2": 0.7547874075661967, "mae": 0.033082120620056825, "spearman": 0.8588235294117647},
+  "relative_mae_improvement": 0.48629935124258555,
+  "mean_paired_improvement": 0.031317487790169726,
+  "bootstrap_95_ci": [0.0146563125829058, 0.04850578599754356],
+  "exact_two_sided_signflip_p": 0.003173828125,
+  "github_actions_run": 31772365592,
+  "workflow_artifact_sha256": "ad27ddecc9c72877b7458ddd64ef022454d68e119455a0f2e4979060d4303afd",
+  "note": "Exact CI rerun of the frozen secondary resolved-16 gate. See docs/SECONDARY_RESOLVED16_RESULT.md for the post-result species-confound diagnostic and interpretation."
+}
