@@ -15,7 +15,13 @@ The checkerboard is no longer the hypothesis. The **writable spatial state + sel
 Read and run it:
 
 - [`docs/index.html`](docs/index.html) — visual concept/claim ledger
+
+  Html page live at: https://anttiluode.github.io/GeometricNeuronV22/docs/index.html
+
 - [`docs/simulator.html`](docs/simulator.html) — original loop beside the corrected evolved toy
+
+  Try it live at: https://anttiluode.github.io/GeometricNeuronV22/docs/simulator.html
+
 - [`docs/GEOMETRIC_NEURON_EVOLVED.md`](docs/GEOMETRIC_NEURON_EVOLVED.md) — full conceptual reset
 
 The simulator is deliberately labelled as a toy. Its right-hand participation ratio is an effective response-diversity statistic, not a literal biological channel count, and its RC-like tree is not a substitute for a biophysical cable model.
