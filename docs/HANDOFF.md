@@ -4,11 +4,11 @@
 
 GeometricNeuronV22 is the clean external-test branch of the Geometric Neuron line.
 
-The frozen first question is unchanged:
+The frozen first question remains:
 
 > Does a small operator/modal description of real dendritic trees improve held-out prediction of Aizenbud et al.'s Functional Complexity Index beyond a strong ordinary morphology baseline?
 
-The analysis design was frozen before FCI outcome exposure. **Blinding is no longer intact**, however: during morphology provenance work the published Fig. 2 was opened and it prints the cell-level FCI values beside the morphology silhouettes. Do not call the future run blinded. It remains a frozen/preregistered analysis, and no feature/baseline/inclusion decision may be changed to improve the result.
+The analysis design was frozen before FCI outcome exposure. **Blinding is no longer intact**: during morphology provenance work the published Fig. 2 was opened and it prints the cell-level FCI values beside the morphology silhouettes. Do not call later analyses blinded. Features/baselines/inclusion rules may not be redesigned to improve the observed result.
 
 ## Frozen primary comparison
 
@@ -23,29 +23,94 @@ B2 + G
   G3 low-mode spacing irregularity
 ```
 
-Validation is leave-one-cell-out fixed ridge regression. The operator arm must improve CV R2, improve MAE by at least 10%, and pass paired CI/sign-flip criteria. Otherwise the result is `NO_EXTERNAL_OPERATOR_ADVANTAGE`.
+Fixed ridge `alpha=1`, standardization inside each LOOCV training fold. Primary pass requires improved CV R2, >=10% MAE improvement, positive paired improvement with bootstrap CI > 0, and exact two-sided sign-flip p < .05.
 
-## What is built
+## New result: secondary resolved-16 gate PASSED
 
-- soma/fork/tip structural cable graph;
-- contraction of tracing-only one-child boundaries;
-- ordinary length/area/path/topology measurements;
-- frozen mass-normalized cable graph operator;
-- G1/G2/G3 extraction;
-- synthetic tests and CI;
-- external author-file smoke;
-- independent NeuroM cross-check of ordinary measurements;
-- exact 24-row target-free identity manifest and receipt validator;
-- target-like-field and substitution rejection in CI;
-- public-source recovery workflows for Mohan, Allen, and the mapped Markram cells.
+Because the strict 24-cell panel is blocked by unresolved morphology provenance, a separate provenance-only 16-cell secondary panel was frozen before computation:
+
+```text
+orders 1, 5, 6, 7, 11,
+       13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24
+```
+
+GitHub Actions run `31772365592` reran the frozen analysis from the committed feature/target files and completed successfully.
+
+```text
+B2
+  CV R2       0.11191
+  MAE         0.064400
+  Spearman    0.38529
+
+B2 + G
+  CV R2       0.75479
+  MAE         0.033082
+  Spearman    0.85882
+
+relative MAE improvement       48.63 %
+mean paired improvement        +0.0313175
+bootstrap 95 % CI              [+0.014656, +0.048506]
+exact two-sided sign-flip p     0.003173828125
+```
+
+Frozen secondary verdict:
+
+```text
+SECONDARY_OPERATOR_SIGNAL
+```
+
+Permanent receipt: `artifacts/secondary_resolved16_result.json`.
+Full interpretation: `docs/SECONDARY_RESOLVED16_RESULT.md`.
+
+### Do not celebrate yet: species confounding is strong
+
+The resolved subset is 5 rat / 11 human, and FCI strongly separates the species. A post-result boring adversary gives:
+
+```text
+species only
+  R2   0.79573
+  MAE  0.029035
+
+B2 + species
+  R2   0.83910
+  MAE  0.027104
+
+B2 + G + species
+  R2   0.82366
+  MAE  0.026425
+```
+
+So a one-bit species indicator alone beats frozen B2+G in CV R2. Within species, G is actively bad in the tiny rat subset (n=5) and only modestly helpful in the human subset (n=11).
+
+Therefore the correct interpretation is:
+
+```text
+secondary gate:  PASSED
+primary gate:    BLOCKED_INCOMPLETE_PROVENANCE
+warning:         SPECIES_CONFOUND_PLAUSIBLE
+```
+
+The secondary pass is interesting because the frozen operator features did dramatically improve over the predeclared morphology baseline. It is not evidence that the operator adds morphology information beyond species.
+
+## Canonical feature table
+
+Use only:
+
+```text
+data/frozen_panel_v01.csv
+```
+
+It contains all 24 identities in paper order, hashes and B2+G features for the 16 recovered rows, with empty feature cells for unresolved rows.
+
+An earlier hand-transcribed JSON contained incorrect longest-path values for three Markram rows. The mismatch was caught by rereading the successful GitHub Actions recovery artifact before the secondary regression. Do not use the old JSON as a feature source.
 
 ## Data-availability finding
 
-The final 2026 PNAS article states that the morphology/neuron-model data were deposited in `ido4848/FCI`. The current cited repository exposes only four morphology files: rat L2 TPC, rat Hay `cell1`, human 2057, human 1125. It has no releases/tags supplying the rest.
+The final 2026 PNAS article states that morphology/neuron-model data were deposited in `ido4848/FCI`, but the cited repository currently exposes only four morphology files: rat L2 TPC, rat Hay `cell1`, human 2057, human 1125. The older preprint explicitly said only those four examples were public and the rest were available on request.
 
-The older preprint explicitly described those same four examples as public and said the other morphologies/models were available on request. Therefore the **current cited public deposit is incomplete for an exact 24-cell reproduction**.
+Therefore the current cited deposit is incomplete for exact 24-cell reproduction.
 
-This is now the main wall. Do not silently fill it with arbitrary source-pool exemplars.
+A ready-to-review author request is in `docs/AUTHOR_DATA_REQUEST_DRAFT.md`.
 
 ## Recovery state
 
@@ -60,8 +125,6 @@ Human L2/3  1125
 
 ### Mohan human source-compatible
 
-Recovered through the DeKock NeuroMorpho archive:
-
 ```text
 1833
 1496
@@ -70,11 +133,11 @@ Recovered through the DeKock NeuroMorpho archive:
 1125
 ```
 
-The author-copy/source-copy 1125 calibration shows B2+G stability. Prefer author 1125 where available; use the source copy only with provenance retained.
+`1125` provides an author-copy/source-copy calibration showing B2+G stability.
 
 ### Allen human
 
-Current RMA resolves and the recovery workflow processed:
+Recovered/processed:
 
 ```text
 548494556
@@ -84,11 +147,11 @@ Current RMA resolves and the recovery workflow processed:
 558211203
 ```
 
-`790872626` resolves as neither Specimen nor NeuronReconstruction in the same service. Do not guess a nearby ID. Some recovered SWCs have disconnected-neurite warnings; record rather than silently repair them.
+`790872626` currently resolves as neither Specimen nor NeuronReconstruction in Allen RMA. Do not guess a nearby ID.
 
 ### Markram rat
 
-Three source identities have now been recovered through public Markram/BBP-derived model packages:
+Recovered through public cortical model packages:
 
 ```text
 229_1
@@ -104,9 +167,9 @@ TTPC_1 232_1
   dend-C060114A7_axon-C060116A3_-_Clone_2.asc
 ```
 
-Actions run `31727584626` successfully downloaded them, applied the paper's 0.3 µm diameter floor using MorphIO, extracted B2+G, and hashed the floored files. See `PROVENANCE_BLOCKERS.md` for the numerical receipt.
+Actions run `31727584626` downloaded them, applied the paper's 0.3 µm diameter floor, extracted B2+G and hashed the files.
 
-`230_1` and `230_2` remain unresolved. The suffix is not unique across public L4 PC/SP/SS model families, so a convenient `L4_PC` match is not sufficient provenance.
+`230_1` and `230_2` remain unresolved because the suffix is shared by multiple L4 PC/SP/SS model families.
 
 ### Reimann rat
 
@@ -120,13 +183,11 @@ L6 UPC
 L5 TPC
 ```
 
-Public Blue Brain/Open Brain templates expose plausible canonical defaults, and the released Aizenbud L2 TPC anchor is itself consistent with that canonical-default pattern. This is useful evidence but not enough to upgrade the five rows to `source_compatible` without a source/author mapping. L6 TPC is additionally taxonomy-ambiguous.
+Public Blue Brain/Open Brain templates expose plausible canonical defaults, but that is not enough to upgrade them without an authoritative source/author mapping. L6 TPC is additionally taxonomy-ambiguous.
 
 ## Strict 24-cell gate status
 
 **BLOCKED_INCOMPLETE_PROVENANCE**
-
-Eight rows remain unresolved:
 
 ```text
 Markram 230_1, 230_2                         2
@@ -137,30 +198,23 @@ Allen   790872626                            1
 Total                                        8
 ```
 
-Do not run the strict 24-cell target fit until this reaches zero.
-
 ## Immediate next work
 
-1. seek an authoritative author/source manifest for the eight missing rows;
-2. if recovered, freeze one immutable 24-row B2+G table with hashes/compatibility flags and run the frozen analysis once;
-3. if exact provenance is not obtainable, freeze a **separate** reduced/source-compatible secondary panel before fitting outcomes; never relabel that as the original 24-cell gate;
-4. preserve the result/null and stop/rescope according to the preregistration.
-
-An author data request is now scientifically cleaner than choosing arbitrary Reimann exemplars, because the final paper itself says those data were deposited.
+1. continue seeking authoritative mappings for the eight missing rows, but do not substitute convenient exemplars;
+2. review/send the author data request if public provenance stays blocked;
+3. if all eight are recovered, freeze the complete 24-row table and run the original v0.1 gate once;
+4. when that result exists, explicitly test whether any operator signal survives species/source controls rather than interpreting the secondary pass at face value.
 
 ## Post-gate ideas that must not leak backward
 
 - physical passive-cable operator using the paper's common Cm/Ra/Rm;
 - location-to-soma response dictionary / effective control degrees of freedom;
-- operator capacity versus afferent address/convergence capacity;
-- PivotPoint-style slow structural control against strong ordinary gradient/TwinProp baselines.
-
-Do not alter v0.1 with these after outcome exposure.
+- operator capacity versus input-address/convergence capacity;
+- PivotPoint-style slow structural control against strong ordinary/TwinProp baselines.
 
 ## Guardrails
 
 - KYY: geometry must beat strong simple baselines.
 - FunctionalArbors: propagation is not credit assignment.
 - PivotPoint: nominal options are not useful control degrees of freedom unless they create materially different reachable consequences.
-- GeometricNeuronPlusField: do not import failed generic-HH/AIS positive claims.
-- No extra graph features may be added to rescue the v0.1 FCI gate.
+- No extra graph features may be added to rescue v0.1 after outcome exposure.
