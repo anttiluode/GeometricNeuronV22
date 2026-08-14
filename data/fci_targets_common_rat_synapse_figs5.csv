@@ -1,0 +1,25 @@
+order,identifier,species,layer,fci_common_rat_synapse,s5_position,mapping_basis,mapping_confidence
+1,L2 TPC,Rat,L2/3,0.1877,1,rat condition unchanged; value and silhouette match Fig2,high
+2,L6 IPC,Rat,L6,0.1972,2,rat condition unchanged; value and silhouette match Fig2,high
+3,L4 TPC,Rat,L4,0.2032,4,rat condition unchanged; value and silhouette match Fig2,high
+4,L6 TPC,Rat,L6,0.2052,5,rat condition unchanged; value and silhouette match Fig2,high
+5,229_5,Rat,L2/3,0.2156,7,rat condition unchanged; value and silhouette match Fig2,high
+6,229_1,Rat,L2/3,0.2260,10,rat condition unchanged; value and silhouette match Fig2,high
+7,cell1,Rat,L5,0.2342,11,rat condition unchanged; value and silhouette match Fig2,high
+8,230_1,Rat,L4,0.2362,12,rat condition unchanged; value and silhouette match Fig2,high
+9,L6 UPC,Rat,L6,0.2399,14,rat condition unchanged; value and silhouette match Fig2,high
+10,230_2,Rat,L4,0.2452,15,rat condition unchanged; value and silhouette match Fig2,high
+11,TTPC_1 232_1,Rat,L5,0.2509,18,rat condition unchanged; value and silhouette match Fig2,high
+12,L5 TPC,Rat,L5,0.2510,19,rat condition unchanged; value and silhouette match Fig2,high
+13,548494556,Human,L6,0.2076,6,repeated morphology silhouette matched within same species/layer,high
+14,528614014,Human,L6,0.2024,3,repeated morphology silhouette matched within same species/layer,high
+15,1833,Human,L5,0.2476,16,repeated morphology silhouette matched within same species/layer,high
+16,539661667,Human,L4,0.2389,13,repeated morphology silhouette matched within same species/layer,high
+17,2057,Human,L5,0.3024,21,repeated morphology silhouette matched within same species/layer,high
+18,569818704,Human,L4,0.2199,8,repeated morphology silhouette matched within same species/layer,high
+19,790872626,Human,L5,0.2201,9,repeated morphology silhouette matched within same species/layer,high
+20,1496,Human,L4,0.2728,20,repeated morphology silhouette matched within same species/layer,high
+21,558211203,Human,L6,0.2502,17,repeated morphology silhouette matched within same species/layer,high
+22,1204,Human,L2/3,0.3401,24,repeated morphology silhouette matched within same species/layer,high
+23,1148,Human,L2/3,0.3128,22,repeated morphology silhouette matched within same species/layer,high
+24,1125,Human,L2/3,0.3223,23,repeated morphology silhouette matched within same species/layer,high
