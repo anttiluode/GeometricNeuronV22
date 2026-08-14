@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Fetch the Aizenbud et al. supplement from public article mirrors.
 
-This is a provenance helper, not part of the frozen V22 regression. Direct
-article-bin URLs are brittle, especially during PMC's 2026 dataset migration, so
-we also query the official PMC Open Access service and inspect the complete OA
-article package for the supplement.
+This is a provenance helper, not part of the frozen V22 regression. PMC moved its
+article datasets to a new per-version AWS structure in 2026, so that official
+cloud route is tried first. Older OA-package and direct URLs remain as fallbacks
+and their failures are retained in the receipt.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import json
 import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 DIRECT_URLS = [
@@ -36,6 +37,7 @@ DIRECT_URLS = [
 
 PMC_IDS = ["PMC13367794", "PMC11702691"]
 USER_AGENT = "GeometricNeuronV22 provenance audit; public reproducibility check"
+S3_HTTPS = "https://pmc-oa-opendata.s3.amazonaws.com"
 
 
 def read_url(url: str) -> tuple[bytes, str]:
@@ -49,6 +51,64 @@ def fetch_pdf(url: str) -> bytes:
     if not payload.startswith(b"%PDF"):
         raise RuntimeError(f"not a PDF ({ctype!r}, first bytes={payload[:30]!r})")
     return payload
+
+
+def s3_keys_for_pmcid(pmcid: str) -> list[str]:
+    # New 2026 PMC AWS layout is versioned: PMC12345678.1/<objects>.
+    url = f"{S3_HTTPS}/?list-type=2&prefix={quote(pmcid + '.', safe='')}"
+    payload, _ = read_url(url)
+    root = ET.fromstring(payload)
+    keys = []
+    for el in root.iter():
+        if el.tag.rsplit("}", 1)[-1] == "Key" and el.text:
+            keys.append(el.text)
+    return keys
+
+
+def _supplement_score(key: str) -> int:
+    base = Path(key).name.lower()
+    score = 0
+    if base == "pnas.2533168123.sapp.pdf":
+        score = 100
+    elif "supplement" in base and base.endswith(".pdf"):
+        score = 90
+    elif "sapp" in base and base.endswith(".pdf"):
+        score = 85
+    elif base.endswith(".pdf") and ("suppl" in base or "supp" in base):
+        score = 80
+    elif base.endswith(".pdf") and ("-s0" in base or "_s0" in base):
+        score = 60
+    # Main article PDFs in the new layout are usually PMCID.version.pdf.
+    if base.startswith("pmc") and base.endswith(".pdf"):
+        score = min(score, 5)
+    return score
+
+
+def fetch_from_pmc_s3(pmcid: str) -> tuple[bytes, dict]:
+    keys = s3_keys_for_pmcid(pmcid)
+    ranked = sorted(
+        ((_supplement_score(key), key) for key in keys),
+        key=lambda x: (-x[0], x[1]),
+    )
+    ranked = [(score, key) for score, key in ranked if score > 0]
+    if not ranked:
+        raise RuntimeError(f"no supplement-looking PDF under AWS prefix; keys={keys!r}")
+
+    failures = []
+    for score, key in ranked:
+        url = f"{S3_HTTPS}/{quote(key, safe='/._-')}"
+        try:
+            payload = fetch_pdf(url)
+            return payload, {
+                "pmcid": pmcid,
+                "s3_key": key,
+                "s3_url": url,
+                "candidate_score": score,
+                "prefix_keys": keys,
+            }
+        except Exception as exc:
+            failures.append({"key": key, "url": url, "error": repr(exc)})
+    raise RuntimeError(f"AWS candidates failed; failures={failures!r}; keys={keys!r}")
 
 
 def https_from_ftp(url: str) -> str:
@@ -75,23 +135,13 @@ def supplement_from_tgz(payload: bytes) -> tuple[bytes, str, list[str]]:
     with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as tf:
         members = [m for m in tf.getmembers() if m.isfile()]
         names = [m.name for m in members]
-        candidates = []
-        for member in members:
-            base = Path(member.name).name.lower()
-            score = 0
-            if base == "pnas.2533168123.sapp.pdf":
-                score = 100
-            elif "supplement" in base and base.endswith(".pdf"):
-                score = 80
-            elif "sapp" in base and base.endswith(".pdf"):
-                score = 70
-            elif base.endswith(".pdf") and ("suppl" in base or "supp" in base):
-                score = 60
-            if score:
-                candidates.append((score, member))
+        candidates = sorted(
+            ((_supplement_score(m.name), m) for m in members),
+            key=lambda x: (-x[0], x[1].name),
+        )
+        candidates = [(score, member) for score, member in candidates if score > 0]
         if not candidates:
             raise RuntimeError(f"no supplement PDF in OA package; files={names}")
-        candidates.sort(key=lambda x: (-x[0], x[1].name))
         chosen = candidates[0][1]
         fh = tf.extractfile(chosen)
         if fh is None:
@@ -167,18 +217,28 @@ def main() -> None:
     payload = None
     chosen_name = None
     chosen_url = None
-    package_receipt = None
+    source_receipt = None
 
-    # Official OA packages first: less dependent on front-end URL layout.
     for pmcid in PMC_IDS:
         try:
-            payload, package_receipt = fetch_from_pmc_package(pmcid)
-            chosen_name = f"{pmcid}_oa_package"
-            chosen_url = package_receipt["oa_url"]
+            payload, source_receipt = fetch_from_pmc_s3(pmcid)
+            chosen_name = f"{pmcid}_aws"
+            chosen_url = source_receipt["s3_url"]
             attempts.append({"name": chosen_name, "status": "ok", "bytes": len(payload)})
             break
         except Exception as exc:
-            attempts.append({"name": f"{pmcid}_oa_package", "status": "failed", "error": repr(exc)})
+            attempts.append({"name": f"{pmcid}_aws", "status": "failed", "error": repr(exc)})
+
+    if payload is None:
+        for pmcid in PMC_IDS:
+            try:
+                payload, source_receipt = fetch_from_pmc_package(pmcid)
+                chosen_name = f"{pmcid}_oa_package"
+                chosen_url = source_receipt["oa_url"]
+                attempts.append({"name": chosen_name, "status": "ok", "bytes": len(payload)})
+                break
+            except Exception as exc:
+                attempts.append({"name": f"{pmcid}_oa_package", "status": "failed", "error": repr(exc)})
 
     if payload is None:
         for name, url in DIRECT_URLS:
@@ -194,7 +254,7 @@ def main() -> None:
         "attempts": attempts,
         "chosen": chosen_name,
         "url": chosen_url,
-        "package": package_receipt,
+        "source": source_receipt,
     }
     (args.out_dir / "fetch_receipt.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
     if payload is None:
